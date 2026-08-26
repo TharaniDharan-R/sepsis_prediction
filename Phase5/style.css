@@ -1,0 +1,785 @@
+/* ==========================================================
+   CSS CUSTOM VARIABLES & GLOBAL STYLES
+   ========================================================== */
+:root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #131926;
+    --bg-card: rgba(20, 27, 41, 0.75);
+    --border-color: rgba(255, 255, 255, 0.06);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    
+    /* Clinical Accents */
+    --color-primary: #3b82f6;      /* Blue */
+    --color-success: #10b981;      /* Green */
+    --color-danger: #ef4444;       /* Red */
+    --color-warning: #f59e0b;      /* Amber */
+    --color-purple: #8b5cf6;       /* Violet */
+    --color-teal: #14b8a6;         /* Teal */
+    
+    --font-ui: 'Inter', sans-serif;
+    --font-heading: 'Outfit', sans-serif;
+    --shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* ==========================================================
+   LAYOUT STRUCTURE
+   ========================================================== */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 300px;
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.sidebar-header {
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.clinical-logo {
+    font-size: 24px;
+    color: var(--color-primary);
+}
+
+.sidebar-header h2 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.sidebar-actions {
+    padding: 20px 24px 10px 24px;
+}
+
+.patient-search {
+    padding: 10px 24px;
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.patient-search input {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px 10px 38px;
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    outline: none;
+    transition: var(--transition-smooth);
+}
+
+.patient-search input:focus {
+    border-color: var(--color-primary);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.patient-list-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 24px 24px 24px;
+    overflow: hidden;
+}
+
+.patient-list-container h3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.patient-list {
+    list-style: none;
+    overflow-y: auto;
+    flex: 1;
+    margin-right: -10px;
+    padding-right: 10px;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Patient List Items */
+.patient-item {
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background-color: rgba(255, 255, 255, 0.02);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.patient-item:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.patient-item.active {
+    background-color: rgba(59, 130, 246, 0.12);
+    border-color: var(--color-primary);
+}
+
+.patient-item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.patient-item-id {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.patient-item-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.patient-item-badges {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.risk-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.risk-low-tag {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--color-success);
+}
+
+.risk-high-tag {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--color-danger);
+    animation: alert-pulse-soft 2s infinite;
+}
+
+.loading-placeholder {
+    color: var(--text-secondary);
+    font-size: 14px;
+    text-align: center;
+    padding: 40px 0;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    background-color: var(--bg-primary);
+    overflow-y: auto;
+    padding: 24px;
+}
+
+/* Empty View styling */
+.empty-view {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.empty-icon {
+    font-size: 64px;
+    color: var(--text-muted);
+}
+
+.empty-view h3 {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    color: var(--text-primary);
+}
+
+.empty-view p {
+    max-width: 400px;
+    font-size: 14px;
+}
+
+/* ==========================================================
+   CARDS & GRID STYLING
+   ========================================================== */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow-premium);
+    backdrop-filter: blur(12px);
+    transition: var(--transition-smooth);
+}
+
+.dashboard-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Patient Header Info Card */
+.patient-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.patient-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.meta-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background-color: rgba(59, 130, 246, 0.15);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.meta-details h1 {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.meta-sub {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.meta-sub strong {
+    color: var(--text-primary);
+}
+
+.risk-summary-badges {
+    display: flex;
+    gap: 24px;
+}
+
+.badge-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.badge-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+}
+
+.badge-value {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.risk-low {
+    color: var(--color-success);
+}
+
+.risk-high {
+    color: var(--color-danger);
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+.badge-status {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-align: center;
+    letter-spacing: 0.02em;
+    margin-top: 2px;
+}
+
+.status-stable {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--color-success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-alert {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--color-danger);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    animation: alert-pulse 1.5s infinite;
+}
+
+/* Vitals Grid Styling */
+.vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+}
+
+.vital-card {
+    padding: 16px;
+    border-radius: 12px;
+}
+
+.vital-card:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(20, 27, 41, 0.85);
+}
+
+.vital-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.vital-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+.vital-unit {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.vital-body {
+    display: flex;
+    align-items: flex-end;
+}
+
+.vital-value {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Row-splitting structures */
+.dashboard-row {
+    display: flex;
+    gap: 20px;
+}
+
+.split-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-1 { flex: 1; }
+.flex-2 { flex: 1.8; }
+
+.card-header {
+    margin-bottom: 16px;
+}
+
+.card-header h3 {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-subtitle {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.chart-container {
+    position: relative;
+    flex: 1;
+    min-height: 250px;
+}
+
+/* Tabs structure inside Cards */
+.explanation-tabs, .whiteboard-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 16px;
+    gap: 4px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 8px 14px;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: var(--transition-smooth);
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+/* Explainable AI (XAI) Contribution list */
+.explanation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.xai-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.xai-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.xai-feat-name {
+    font-weight: 500;
+}
+
+.xai-feat-val {
+    color: var(--text-secondary);
+}
+
+.xai-bar-track {
+    width: 100%;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.xai-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.bar-positive {
+    background-color: var(--color-danger);
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+.bar-negative {
+    background-color: var(--color-primary);
+    box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
+}
+
+/* Multi-Agent Whiteboard styling */
+.whiteboard-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 300px;
+}
+
+.whiteboard-panel {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Clinical Summary text area */
+.clinical-summary-markdown {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    padding-right: 8px;
+    white-space: pre-wrap;
+}
+
+.clinical-summary-markdown h4 {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    margin: 14px 0 6px 0;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 4px;
+}
+
+.clinical-summary-markdown p {
+    margin-bottom: 10px;
+}
+
+/* Whiteboard Log Feed Items */
+.whiteboard-logs-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 8px;
+}
+
+.log-item {
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.015);
+    border-left: 3px solid var(--border-color);
+    font-family: monospace;
+}
+
+.log-item-orchestrator { border-left-color: var(--color-primary); }
+.log-item-validation { border-left-color: var(--color-warning); }
+.log-item-prediction { border-left-color: var(--color-teal); }
+.log-item-monitoring { border-left-color: var(--color-purple); }
+.log-item-explainability { border-left-color: var(--color-purple); }
+.log-item-riskassessment { border-left-color: var(--color-primary); }
+.log-item-alert { border-left-color: var(--color-danger); }
+
+/* Vitals Simulator Form */
+.vitals-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-group input, .form-group select {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    outline: none;
+    transition: var(--transition-smooth);
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: var(--color-primary);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    outline: none;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: #ffffff;
+}
+.btn-primary:hover {
+    background-color: #2563eb;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-success {
+    background-color: var(--color-success);
+    color: #ffffff;
+}
+.btn-success:hover {
+    background-color: #059669;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+/* ==========================================================
+   MODAL OVERLAY DIALOGS
+   ========================================================== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(5, 8, 14, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: var(--transition-smooth);
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.modal-header h2 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 22px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.close-btn:hover {
+    color: var(--text-primary);
+}
+
+.hidden {
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ==========================================================
+   UTILITY & COLOR CLASSES
+   ========================================================== */
+.text-red { color: var(--color-danger); }
+.text-blue { color: var(--color-primary); }
+.text-green { color: var(--color-success); }
+.text-orange { color: var(--color-warning); }
+.text-purple { color: var(--color-purple); }
+.text-teal { color: var(--color-teal); }
+
+/* ==========================================================
+   ANIMATIONS
+   ========================================================== */
+@keyframes alert-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+    70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@keyframes alert-pulse-soft {
+    0% { background-color: rgba(239, 68, 68, 0.15); }
+    50% { background-color: rgba(239, 68, 68, 0.35); }
+    100% { background-color: rgba(239, 68, 68, 0.15); }
+}

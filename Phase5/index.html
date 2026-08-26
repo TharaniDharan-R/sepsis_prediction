@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sepsis Prediction Clinical Dashboard</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Sidebar: Patient Directory -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-microscope clinical-logo"></i>
+                <h2>ICU Sepsis AI</h2>
+            </div>
+            
+            <div class="sidebar-actions">
+                <button id="add-patient-btn" class="btn btn-primary btn-block">
+                    <i class="fa-solid fa-user-plus"></i> Register Patient
+                </button>
+            </div>
+            
+            <div class="patient-search">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="patient-search-input" placeholder="Search Patient ID...">
+            </div>
+            
+            <div class="patient-list-container">
+                <h3>Active Patients (<span id="patient-count">0</span>)</h3>
+                <ul id="patient-list" class="patient-list">
+                    <!-- Loaded dynamically -->
+                    <li class="loading-placeholder">Loading patients...</li>
+                </ul>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- No Patient Selected State -->
+            <div id="no-patient-view" class="empty-view">
+                <i class="fa-solid fa-hospital-user empty-icon"></i>
+                <h3>No Patient Selected</h3>
+                <p>Select a patient from the directory sidebar or register a new one to view real-time AI evaluations.</p>
+            </div>
+            
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="dashboard-grid hidden">
+                
+                <!-- Row 1: Patient Header Info -->
+                <header class="patient-header card">
+                    <div class="patient-meta">
+                        <div class="meta-avatar">
+                            <i class="fa-solid fa-user-injured"></i>
+                        </div>
+                        <div class="meta-details">
+                            <h1 id="chart-patient-id">pat_xxxxxxxx</h1>
+                            <div class="meta-sub">
+                                <span>Age: <strong id="chart-age">--</strong> yrs</span>
+                                <span>Gender: <strong id="chart-gender">--</strong></span>
+                                <span>Unit: <strong id="chart-unit">--</strong></span>
+                                <span>Hospital Offset: <strong id="chart-adm-time">--</strong> hrs</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-summary-badges">
+                        <div class="badge-item">
+                            <span class="badge-label">Sepsis Probability</span>
+                            <span id="chart-risk-prob" class="badge-value risk-low">0.0%</span>
+                        </div>
+                        <div class="badge-item">
+                            <span class="badge-label">Clinical Alarm</span>
+                            <span id="chart-alarm-badge" class="badge-status status-stable">STABLE</span>
+                        </div>
+                    </div>
+                </header>
+                
+                <!-- Row 2: Vitals Grid -->
+                <section class="vitals-grid">
+                    <div class="vital-card card" data-vital="HR">
+                        <div class="vital-header">
+                            <span class="vital-title"><i class="fa-solid fa-heart-pulse text-red"></i> Heart Rate</span>
+                            <span class="vital-unit">bpm</span>
+                        </div>
+                        <div class="vital-body">
+                            <span id="vital-val-HR" class="vital-value">--</span>
+                        </div>
+                    </div>
+                    
+                    <div class="vital-card card" data-vital="O2Sat">
+                        <div class="vital-header">
+                            <span class="vital-title"><i class="fa-solid fa-wind text-blue"></i> O2 Saturation</span>
+                            <span class="vital-unit">%</span>
+                        </div>
+                        <div class="vital-body">
+                            <span id="vital-val-O2Sat" class="vital-value">--</span>
+                        </div>
+                    </div>
+                    
+                    <div class="vital-card card" data-vital="Temp">
+                        <div class="vital-header">
+                            <span class="vital-title"><i class="fa-solid fa-temperature-half text-orange"></i> Temperature</span>
+                            <span class="vital-unit">°C</span>
+                        </div>
+                        <div class="vital-body">
+                            <span id="vital-val-Temp" class="vital-value">--</span>
+                        </div>
+                    </div>
+                    
+                    <div class="vital-card card" data-vital="SBP">
+                        <div class="vital-header">
+                            <span class="vital-title"><i class="fa-solid fa-gauge-high text-green"></i> Blood Pressure</span>
+                            <span class="vital-unit">mmHg</span>
+                        </div>
+                        <div class="vital-body">
+                            <span id="vital-val-BP" class="vital-value">-- / --</span>
+                        </div>
+                    </div>
+                    
+                    <div class="vital-card card" data-vital="Resp">
+                        <div class="vital-header">
+                            <span class="vital-title"><i class="fa-solid fa-lungs text-teal"></i> Respiration</span>
+                            <span class="vital-unit">/min</span>
+                        </div>
+                        <div class="vital-body">
+                            <span id="vital-val-Resp" class="vital-value">--</span>
+                        </div>
+                    </div>
+                    
+                    <div class="vital-card card" data-vital="Shock_Index">
+                        <div class="vital-header">
+                            <span class="vital-title"><i class="fa-solid fa-triangle-exclamation text-purple"></i> Shock Index</span>
+                            <span class="vital-unit">ratio</span>
+                        </div>
+                        <div class="vital-body">
+                            <span id="vital-val-ShockIndex" class="vital-value">--</span>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Row 3: Sepsis Trajectory (Left) & Explainable AI (Right) -->
+                <div class="dashboard-row split-row">
+                    <!-- Sepsis Trajectory -->
+                    <div class="card split-card flex-2">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-chart-line text-blue"></i> Sepsis Risk Trajectory</h3>
+                            <span class="card-subtitle">Hourly XGBoost Probability Score</span>
+                        </div>
+                        <div class="card-body chart-container">
+                            <canvas id="trajectoryChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Explainable AI (XAI) -->
+                    <div class="card split-card flex-1">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-brain text-purple"></i> Sepsis Risk Drivers</h3>
+                            <span class="card-subtitle">SHAP / LIME Feature Contributions</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="explanation-tabs">
+                                <button id="tab-shap" class="tab-btn active">SHAP (Log-Odds)</button>
+                                <button id="tab-lime" class="tab-btn">LIME (Weight)</button>
+                            </div>
+                            <div id="explanation-container" class="explanation-list">
+                                <!-- Loaded dynamically -->
+                                <div class="loading-placeholder">Select Hour on Chart to view details</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Row 4: Agent Whiteboard (Left) & Simulator Form (Right) -->
+                <div class="dashboard-row split-row">
+                    <!-- Agent Whiteboard -->
+                    <div class="card split-card flex-2">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-people-group text-teal"></i> Multi-Agent Clinical Whiteboard</h3>
+                            <span class="card-subtitle">Cooperative AI Medical Team Rounding Notes</span>
+                        </div>
+                        <div class="card-body whiteboard-body">
+                            <div class="whiteboard-tabs">
+                                <button id="tab-clinical-summary" class="tab-btn active">Clinical Summary</button>
+                                <button id="tab-whiteboard-logs" class="tab-btn">Whiteboard Transcripts</button>
+                            </div>
+                            
+                            <div id="clinical-summary-panel" class="whiteboard-panel">
+                                <div id="clinical-summary-text" class="clinical-summary-markdown">
+                                    <!-- Dynamic text -->
+                                </div>
+                            </div>
+                            
+                            <div id="whiteboard-logs-panel" class="whiteboard-panel hidden">
+                                <ul id="whiteboard-logs-list" class="whiteboard-logs-list">
+                                    <!-- Dynamic logs -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Clinical Simulator Form -->
+                    <div class="card split-card flex-1">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-heart-circle-check text-green"></i> Vital Stream Simulator</h3>
+                            <span class="card-subtitle">Log next hour vitals to evaluate AI</span>
+                        </div>
+                        <div class="card-body">
+                            <form id="vitals-simulator-form" class="vitals-form">
+                                <input type="hidden" id="form-hour" value="1">
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="input-HR">Heart Rate (bpm)</label>
+                                        <input type="number" step="0.1" id="input-HR" placeholder="80" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="input-O2Sat">O2 Saturation (%)</label>
+                                        <input type="number" step="0.1" id="input-O2Sat" placeholder="98" min="50" max="100" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="input-Temp">Temperature (°C)</label>
+                                        <input type="number" step="0.1" id="input-Temp" placeholder="37.0" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="input-Resp">Respiration Rate</label>
+                                        <input type="number" step="0.1" id="input-Resp" placeholder="18" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="input-SBP">Systolic BP (mmHg)</label>
+                                        <input type="number" step="0.1" id="input-SBP" placeholder="120" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="input-DBP">Diastolic BP (mmHg)</label>
+                                        <input type="number" step="0.1" id="input-DBP" placeholder="70" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="input-MAP">Mean Arterial Pressure (MAP)</label>
+                                    <input type="number" step="0.1" id="input-MAP" placeholder="Auto-calculated if blank">
+                                </div>
+                                
+                                <button type="submit" id="simulate-btn" class="btn btn-success btn-block">
+                                    <i class="fa-solid fa-play"></i> Log Hour & Run AI Pipeline
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </main>
+        
+    </div>
+    
+    <!-- Register Patient Modal -->
+    <div id="add-patient-modal" class="modal hidden">
+        <div class="modal-content card">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-user-plus text-blue"></i> Register New ICU Patient</h2>
+                <button id="close-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <form id="add-patient-form">
+                <div class="form-group">
+                    <label for="new-patient-id">Patient ID (e.g. p000101)</label>
+                    <input type="text" id="new-patient-id" placeholder="p000101" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new-patient-age">Age (years)</label>
+                        <input type="number" step="0.1" id="new-patient-age" placeholder="65" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-patient-gender">Gender</label>
+                        <select id="new-patient-gender" required>
+                            <option value="1">Male</option>
+                            <option value="0">Female</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new-patient-unit1">MICU Unit (0 or 1)</label>
+                        <input type="number" min="0" max="1" id="new-patient-unit1" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-patient-unit2">SICU Unit (0 or 1)</label>
+                        <input type="number" min="0" max="1" id="new-patient-unit2" value="0" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="new-patient-admtime">Hospital offset prior to ICU (hrs)</label>
+                    <input type="number" step="0.1" id="new-patient-admtime" placeholder="-4.2" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Register & Create Chart</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Custom Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>
