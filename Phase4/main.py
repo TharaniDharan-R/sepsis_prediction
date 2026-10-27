@@ -29,15 +29,17 @@ app = FastAPI(
 dashboard_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Phase5"))
 app.mount("/dashboard", StaticFiles(directory=dashboard_path, html=True), name="dashboard")
 
+
 # Enable CORS for dashboard integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://sepsis-prediction-website.onrender.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 # Global variables for clinical engine instances loaded on startup
 orchestrator = None
 explainer = None
