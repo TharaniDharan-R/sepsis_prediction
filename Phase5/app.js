@@ -1,6 +1,5 @@
 // API Base URL (relative as it is hosted on the same server)
-const BASE_URL = "";
-
+const BASE_URL = "https://sepsis-prediction-1-pmkk.onrender.com";
 // Global App State
 let selectedPatientId = null;
 let patients = [];
