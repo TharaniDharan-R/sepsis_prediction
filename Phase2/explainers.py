@@ -1,4 +1,3 @@
-```python
 import os
 import gc
 import joblib
@@ -348,4 +347,3 @@ class SepsisExplainer:
             num_features=min(10, len(self.feature_names)),
             num_samples=500
         )
-```
